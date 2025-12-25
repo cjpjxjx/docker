@@ -1,0 +1,10 @@
+services:
+  xray-core:
+    image: teddysun/xray
+    container_name: xray-core
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./config.json:/etc/xray/config.json
