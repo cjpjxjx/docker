@@ -45,10 +45,10 @@ echo "   UUID: $CLIENT_UUID"
 echo ""
 echo "2. 生成 X25519 密钥对..."
 KEYPAIR=$(docker run --rm $DOCKER_IMAGE sh -c "xray x25519")
-PRIVATE_KEY=$(echo "$KEYPAIR" | grep "PrivateKey:" | awk '{print $2}')
-PUBLIC_KEY=$(echo "$KEYPAIR" | grep "Password:" | awk '{print $2}')
+PRIVATE_KEY=$(echo "$KEYPAIR" | grep "PrivateKey" | awk '{print $NF}')
+PUBLIC_KEY=$(echo "$KEYPAIR" | grep "PublicKey" | awk '{print $NF}')
 echo "   PrivateKey: $PRIVATE_KEY"
-echo "   Password: $PUBLIC_KEY"
+echo "   PublicKey: $PUBLIC_KEY"
 
 # 生成 shortId
 echo ""
@@ -156,7 +156,7 @@ echo ""
 echo "配置信息:"
 echo "  客户端 UUID: $CLIENT_UUID"
 echo "  PrivateKey: $PRIVATE_KEY"
-echo "  Password: $PUBLIC_KEY"
+echo "  PublicKey: $PUBLIC_KEY"
 echo "  shortId: $SHORT_ID"
 echo "  公网 IP: $PUBLIC_IP"
 echo "  端口: $PORT"
