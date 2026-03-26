@@ -141,8 +141,12 @@ else
     NAME_RAW="$SHARE_LINK_NAME"
 fi
 
-# URL 编码名称
-NAME_ENCODED=$(printf "%s" "$NAME_RAW" | xxd -plain | tr -d '\n' | sed 's/\(..\)/%\1/g')
+# URL 编码名称 (优先尝试 python3 只转义非字母数字字符，否则回退到 xxd 全转义方案)
+if command -v python3 > /dev/null 2>&1; then
+    NAME_ENCODED=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$NAME_RAW")
+else
+    NAME_ENCODED=$(printf "%s" "$NAME_RAW" | xxd -plain | tr -d '\n' | sed 's/\(..\)/%\1/g')
+fi
 
 # 组装 VLESS 链接
 VLESS_LINK="vless://${CLIENT_UUID}@${PUBLIC_IP}:${PORT}?encryption=none&flow=${FLOW}&security=reality&sni=${SNI_DOMAIN}&fp=chrome&pbk=${PUBLIC_KEY}&sid=${SHORT_ID}&type=tcp&headerType=none#${NAME_ENCODED}"
