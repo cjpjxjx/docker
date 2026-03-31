@@ -45,7 +45,8 @@ if [ "$REFRESH_MODE" = true ]; then
     # 从 config.json 提取
     CLIENT_UUID=$(grep -o '"id": "[^"]*"' "$CONFIG_FILE" | head -1 | cut -d'"' -f4)
     PRIVATE_KEY=$(grep -o '"privateKey": "[^"]*"' "$CONFIG_FILE" | head -1 | cut -d'"' -f4)
-    SHORT_ID=$(grep -o '"shortIds": \[ "[^"]*"' "$CONFIG_FILE" | head -1 | cut -d'"' -f4)
+    # 兼容单行和多行格式提取 shortIds (取数组中的第一个值)
+    SHORT_ID=$(grep -A 1 '"shortIds":' "$CONFIG_FILE" | grep -o '"[^"]*"' | grep -v "shortIds" | head -1 | tr -d '"')
     
     # 从 sharelink.txt 提取公钥 (pbk 参数)
     PUBLIC_KEY=$(grep -o 'pbk=[^&#]*' "$SHARELINK_FILE" | head -1 | cut -d'=' -f2)
@@ -243,37 +244,36 @@ echo "Mihomo 节点配置:"
 echo "$MIHOMO_CONFIG"
 echo ""
 
-# 二次确认是否启动容器
-if [ "$REFRESH_MODE" = true ]; then
-    read -p "是否需要根据现有配置重启 Xray 容器？(y/N): " start_container
-else
+# 只有在非刷新模式下才提示启动容器
+if [ "$REFRESH_MODE" = false ]; then
+    echo ""
     read -p "是否立即启动 Xray 容器？(y/N): " start_container
-fi
 
-if [[ "$start_container" =~ ^[Yy]$ ]]; then
-    echo ""
-    echo "正在启动/重启容器..."
+    if [[ "$start_container" =~ ^[Yy]$ ]]; then
+        echo ""
+        echo "正在启动容器..."
 
-    # 进入脚本目录
-    cd "$SCRIPT_DIR"
+        # 进入脚本目录
+        cd "$SCRIPT_DIR"
 
-    # 先停止并删除现有容器
-    echo "  → 停止现有容器..."
-    docker compose down 2>/dev/null || true
+        # 先停止并删除现有容器
+        echo "  → 停止现有容器..."
+        docker compose down 2>/dev/null || true
 
-    # 启动新容器
-    echo "  → 启动新容器..."
-    docker compose up -d
+        # 启动新容器
+        echo "  → 启动新容器..."
+        docker compose up -d
 
-    echo ""
-    echo "✓ 容器已启动"
-    echo ""
-    echo "查看日志: docker compose logs -f"
-    echo "停止容器: docker compose down"
-else
-    echo ""
-    echo "提示: 可通过以下命令手动启动/重启服务:"
-    echo "  docker compose up -d"
+        echo ""
+        echo "✓ 容器已启动"
+        echo ""
+        echo "查看日志: docker compose logs -f"
+        echo "停止容器: docker compose down"
+    else
+        echo ""
+        echo "提示: 可通过以下命令手动启动服务:"
+        echo "  docker compose up -d"
+    fi
 fi
 
 echo ""
