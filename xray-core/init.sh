@@ -91,7 +91,7 @@ else
     echo "2. 生成 X25519 密钥对..."
     KEYPAIR=$(docker run --rm $DOCKER_IMAGE sh -c "xray x25519")
     PRIVATE_KEY=$(echo "$KEYPAIR" | grep "PrivateKey" | awk '{print $NF}')
-    PUBLIC_KEY=$(echo "$KEYPAIR" | grep "PublicKey" | awk '{print $NF}')
+    PUBLIC_KEY=$(echo "$KEYPAIR" | grep -E "^(PublicKey|Password):" | awk '{print $NF}')
     echo "   PrivateKey: $PRIVATE_KEY"
     echo "   PublicKey: $PUBLIC_KEY"
 
