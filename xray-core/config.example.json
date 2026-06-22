@@ -23,11 +23,11 @@
       "streamSettings": {
         "network": "tcp",
         "realitySettings": {
-          "dest": "www.microsoft.com:443",
+          "dest": "www.bing.com:443",
           "privateKey": "<template>",
           "serverNames": [
-            "www.microsoft.com",
-            "microsoft.com"
+            "www.bing.com",
+            "bing.com"
           ],
           "shortIds": [
             "<template>"

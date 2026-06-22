@@ -10,7 +10,7 @@ DOCKER_IMAGE="teddysun/xray"
 
 # ========== 配置变量 ==========
 # SNI 域名（必须以 www. 开头）
-SNI_DOMAIN="www.microsoft.com"
+SNI_DOMAIN="www.bing.com"
 
 # 分享链接名称（留空则使用默认格式：VLESS-公网IP）
 SHARE_LINK_NAME=""
@@ -91,7 +91,7 @@ else
     echo "2. 生成 X25519 密钥对..."
     KEYPAIR=$(docker run --rm $DOCKER_IMAGE sh -c "xray x25519")
     PRIVATE_KEY=$(echo "$KEYPAIR" | grep "PrivateKey" | awk '{print $NF}')
-    PUBLIC_KEY=$(echo "$KEYPAIR" | grep -E "^(PublicKey|Password):" | awk '{print $NF}')
+    PUBLIC_KEY=$(echo "$KEYPAIR" | grep -v "PrivateKey" | grep -E "(PublicKey|Password)" | awk '{print $NF}')
     echo "   PrivateKey: $PRIVATE_KEY"
     echo "   PublicKey: $PUBLIC_KEY"
 
@@ -159,10 +159,10 @@ if [ "$REFRESH_MODE" = false ]; then
     sed -i "s/\"privateKey\": \"<template>\"/\"privateKey\": \"$PRIVATE_KEY\"/" "$CONFIG_FILE"
     sed -i "s/\"<template>\"/\"$SHORT_ID\"/" "$CONFIG_FILE"
 
-    # 替换域名（只有当不是 microsoft.com 时才替换）
-    if [ "$BASE_DOMAIN" != "microsoft.com" ]; then
-        sed -i "s/www.microsoft.com/$SNI_DOMAIN/g" "$CONFIG_FILE"
-        sed -i "s/microsoft.com/$BASE_DOMAIN/g" "$CONFIG_FILE"
+    # 替换域名（只有当不是 bing.com 时才替换）
+    if [ "$BASE_DOMAIN" != "bing.com" ]; then
+        sed -i "s/www.bing.com/$SNI_DOMAIN/g" "$CONFIG_FILE"
+        sed -i "s/bing.com/$BASE_DOMAIN/g" "$CONFIG_FILE"
     fi
 
     echo "   配置文件已生成"

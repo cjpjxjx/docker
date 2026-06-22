@@ -1,0 +1,9 @@
+{
+  "active": "nexus-private-key",
+  "keys": [
+    {
+      "id": "nexus-private-key",
+      "key": "xxxxxxxxxxxxxxxx"
+    }
+  ]
+}

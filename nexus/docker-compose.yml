@@ -1,0 +1,34 @@
+services:
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    restart: unless-stopped
+    depends_on:
+      - nexus-db
+    environment:
+      - TZ=Asia/Shanghai
+      - INSTALL4J_ADD_VM_PARAMS=-Dnexus.secrets.file=/nexus-data/nexus-private-key.json
+    volumes:
+      - ./data:/nexus-data
+      - ./nexus-private-key.json:/nexus-data/nexus-private-key.json:ro
+    networks:
+      - nginx_default
+
+  nexus-db:
+    image: postgres:17
+    container_name: nexus-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Shanghai
+      - POSTGRES_DB=nexus
+      - POSTGRES_USER=nexus
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - nginx_default
+
+networks:
+  nginx_default:
+    external: true
